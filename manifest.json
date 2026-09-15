@@ -1,0 +1,23 @@
+{
+  "name": "מחולל לוחות שנה",
+  "short_name": "לוח שנה",
+  "description": "יצירת לוחות שנה עבריים מותאמים אישית",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#1a365d",
+  "theme_color": "#1a365d",
+  "lang": "he",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="מחולל לוחות שנה עבריים מותאמים אישית - יצירה, עריכה וייצוא PDF">
+  <meta name="theme-color" content="#1a365d">
+  <title>מחולל לוחות שנה</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="assets/icons/icon-192.png" type="image/png">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/editor.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Dashboard View -->
+    <div id="view-dashboard" class="view active">
+      <header class="app-header">
+        <h1>מחולל לוחות שנה</h1>
+        <p class="subtitle">צור לוחות שנה עבריים מותאמים אישית להדפסה</p>
+      </header>
+      <main class="dashboard-main">
+        <button id="btn-new-project" class="btn btn-primary btn-large">
+          <span class="icon">+</span> לוח שנה חדש
+        </button>
+        <div id="projects-list" class="projects-grid">
+          <!-- Projects will be rendered here -->
+        </div>
+        <div id="empty-state" class="empty-state hidden">
+          <div class="empty-icon">📅</div>
+          <h2>עדיין לא יצרת לוח שנה</h2>
+          <p>התחל ביצירת הלוח הראשון שלך</p>
+          <button id="btn-first-project" class="btn btn-primary">+ צור את לוח השנה הראשון שלך</button>
+        </div>
+      </main>
+      <footer class="app-footer">
+        <p>התמונות והפרויקטים נשמרים במכשיר שלך בלבד · פרטיות מלאה</p>
+        <button id="btn-import" class="btn btn-text">ייבוא פרויקט</button>
+      </footer>
+    </div>
+
+    <!-- Wizard View -->
+    <div id="view-wizard" class="view">
+      <header class="wizard-header">
+        <button id="btn-wizard-back" class="btn btn-icon" aria-label="חזרה">←</button>
+        <h2>יצירת לוח שנה חדש</h2>
+      </header>
+      <div class="wizard-steps">
+        <div class="step active" data-step="1">1. שם</div>
+        <div class="step" data-step="2">2. שנה</div>
+        <div class="step" data-step="3">3. עיצוב</div>
+      </div>
+      <div class="wizard-content">
+        <div id="wizard-step-1" class="wizard-panel active">
+          <label for="project-name">שם הלוח</label>
+          <input type="text" id="project-name" value="לוח שנה חדש" maxlength="60" dir="rtl">
+        </div>
+        <div id="wizard-step-2" class="wizard-panel">
+          <label for="hebrew-year">שנה עברית</label>
+          <select id="hebrew-year"></select>
+          <p class="hint">ניתן לבחור שנים החל מתשפ״ז (5787) והלאה</p>
+        </div>
+        <div id="wizard-step-3" class="wizard-panel">
+          <label>בחר עיצוב התחלתי</label>
+          <div id="template-grid" class="template-grid"></div>
+        </div>
+      </div>
+      <div class="wizard-actions">
+        <button id="btn-wizard-prev" class="btn btn-secondary hidden">הקודם</button>
+        <button id="btn-wizard-next" class="btn btn-primary">הבא</button>
+        <button id="btn-wizard-create" class="btn btn-primary hidden">צור לוח שנה</button>
+      </div>
+    </div>
+
+    <!-- Editor View -->
+    <div id="view-editor" class="view">
+      <header class="editor-header">
+        <button id="btn-back-dashboard" class="btn btn-icon" aria-label="חזרה לדשבורד">←</button>
+        <h2 id="editor-title">לוח שנה</h2>
+        <span id="save-status" class="save-status">✓ נשמר</span>
+      </header>
+      <div class="editor-layout">
+        <aside class="editor-sidebar" id="editor-sidebar">
+          <nav class="sidebar-tabs">
+            <button class="tab active" data-tab="images">תמונות</button>
+            <button class="tab" data-tab="layout">פריסה</button>
+            <button class="tab" data-tab="design">עיצוב</button>
+            <button class="tab" data-tab="month">חודש</button>
+            <button class="tab" data-tab="settings">הגדרות</button>
+          </nav>
+          <div class="sidebar-content">
+            <div id="tab-images" class="tab-panel active">
+              <div class="upload-zone" id="upload-zone">
+                <p>גרור תמונות לכאן או לחץ לבחירה</p>
+                <input type="file" id="image-input" accept="image/jpeg,image/png,image/webp" multiple hidden>
+                <button class="btn btn-secondary" id="btn-select-images">בחר תמונות</button>
+              </div>
+              <div id="images-list" class="images-list"></div>
+            </div>
+            <div id="tab-layout" class="tab-panel">
+              <label>פריסת תמונות</label>
+              <div id="layout-options" class="layout-options"></div>
+              <div class="apply-options">
+                <label><input type="radio" name="apply-layout" value="current" checked> חודש זה</label>
+                <label><input type="radio" name="apply-layout" value="all"> כל החודשים</label>
+              </div>
+            </div>
+            <div id="tab-design" class="tab-panel">
+              <label>תבנית עיצוב</label>
+              <div id="design-options" class="design-options"></div>
+              <div class="apply-options">
+                <label><input type="radio" name="apply-design" value="current" checked> חודש זה</label>
+                <label><input type="radio" name="apply-design" value="all"> כל החודשים</label>
+              </div>
+            </div>
+            <div id="tab-month" class="tab-panel">
+              <p>ניווט בין חודשים</p>
+              <div id="months-thumbs" class="months-thumbs"></div>
+            </div>
+            <div id="tab-settings" class="tab-panel">
+              <h3>גודל נייר</h3>
+              <label><input type="radio" name="paper" value="A4" checked> A4</label>
+              <label><input type="radio" name="paper" value="A3"> A3</label>
+              <h3>כיוון</h3>
+              <label><input type="radio" name="orientation" value="landscape" checked> לרוחב</label>
+              <label><input type="radio" name="orientation" value="portrait"> לאורך</label>
+              <h3>הצגת מידע</h3>
+              <label><input type="checkbox" id="show-hebrew" checked> תאריכים עבריים</label>
+              <label><input type="checkbox" id="show-gregorian" checked> תאריכים לועזיים</label>
+              <label><input type="checkbox" id="show-shabbat" checked> שבתות</label>
+              <label><input type="checkbox" id="show-holidays" checked> חגים</label>
+              <label><input type="checkbox" id="show-rosh" checked> ראש חודש</label>
+              <hr>
+              <p class="privacy-note">הפרטיות שלך חשובה לנו.<br>התמונות והפרויקטים נשמרים במכשיר שלך ואינם נשלחים לשרת.</p>
+            </div>
+          </div>
+        </aside>
+        <main class="editor-preview">
+          <div id="preview-container" class="preview-container">
+            <div id="page-preview" class="page-preview"></div>
+          </div>
+          <div class="month-nav">
+            <button id="btn-prev-month" class="btn btn-icon">←</button>
+            <span id="current-month-name">תשרי</span>
+            <button id="btn-next-month" class="btn btn-icon">→</button>
+          </div>
+        </main>
+      </div>
+      <footer class="editor-footer">
+        <button id="btn-export-pdf" class="btn btn-primary btn-large">הפק PDF</button>
+        <button id="btn-export-zip" class="btn btn-secondary">ייצוא פרויקט</button>
+      </footer>
+    </div>
+
+    <!-- PDF Progress Modal -->
+    <div id="pdf-modal" class="modal hidden">
+      <div class="modal-content">
+        <h3 id="pdf-status">מכין את לוח השנה...</h3>
+        <div class="progress-bar"><div id="pdf-progress" class="progress-fill"></div></div>
+        <p id="pdf-detail"></p>
+        <button id="btn-download-pdf" class="btn btn-primary hidden">הורד PDF</button>
+        <button id="btn-close-pdf" class="btn btn-secondary hidden">סגור</button>
+      </div>
+    </div>
+
+    <!-- Confirm Dialog -->
+    <div id="confirm-modal" class="modal hidden">
+      <div class="modal-content">
+        <h3 id="confirm-title">אישור</h3>
+        <p id="confirm-message"></p>
+        <div class="modal-actions">
+          <button id="btn-confirm-cancel" class="btn btn-secondary">ביטול</button>
+          <button id="btn-confirm-ok" class="btn btn-danger">מחק</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast hidden"></div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
